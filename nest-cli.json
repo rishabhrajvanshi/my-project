@@ -19,6 +19,15 @@
         "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
       }
     },
+    "database-lib": {
+      "type": "library",
+      "root": "libs/database-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/database-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/database-lib/tsconfig.lib.json"
+      }
+    },
     "my-project": {
       "type": "application",
       "root": "apps/my-project",
