@@ -1,25 +1,36 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { App } from 'supertest/types';
+import { INestMicroservice } from '@nestjs/common';
+import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './../src/app.module';
+import { join } from 'path';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication<App>;
+describe('AppController (e2e) - gRPC', () => {
+  let microservice: INestMicroservice;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    microservice = moduleFixture.createNestMicroservice<MicroserviceOptions>({
+      transport: Transport.GRPC,
+      options: {
+        package: 'user',
+        protoPath: join(__dirname, '../../../proto/user.proto'),
+        url: '0.0.0.0:5002', // Use different port for testing
+      },
+    });
+    
+    await microservice.listen();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  afterEach(async () => {
+    if (microservice) {
+      await microservice.close();
+    }
+  });
+
+  it('should initialize gRPC microservice', () => {
+    expect(microservice).toBeDefined();
   });
 });
